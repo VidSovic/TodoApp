@@ -1,9 +1,11 @@
 <mat-card>
-<mat-form-field>
-<textarea matInput rows="3" [(ngModel)]="enteredValue">
-</textarea>
-</mat-form-field>
-<button mat-raised-button color="primary" (click)="onAddTodo()">Add todo</button>
+  <form (submit)="onAddTodo(todoForm)" #todoForm="ngForm">
+    <mat-form-field>
+      <input matInput type="text" name="task" ngModel required minlength="3" #task="ngModel">
+      <mat-error *ngIf="task.invalid">Please enter task you want to do!</mat-error>
+    </mat-form-field>
+    <button mat-raised-button color="primary" type="submit">Add todo</button>
+  </form>
 </mat-card>
 
 

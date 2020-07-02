@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import {Todo} from '../todo.model';
 
 @Component({
   selector: 'app-todo-list',
@@ -7,7 +8,5 @@ import { Component } from '@angular/core';
 })
 
 export class TodoListComponent{
-  posts = [
-    {todo: 'pospravit kuhno'}
-  ];
+  @Input() todos: Todo[] = [];
 }

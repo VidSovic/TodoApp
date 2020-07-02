@@ -1,5 +1,6 @@
-import {Component} from '@angular/core';
-
+import { Component, EventEmitter, Output } from '@angular/core';
+import { Todo } from '../todo.model';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector:'app-todo-create',
@@ -8,9 +9,13 @@ import {Component} from '@angular/core';
 })
 export class TodoCreateComponent{
   enteredValue='';
-  newTodo = '';
+  @Output() todoCreated = new EventEmitter<Todo>();
 
-  onAddTodo(){
-    this.newTodo = this.enteredValue;
+  onAddTodo(form: NgForm){
+    if(form.invalid){
+      return;
+    }
+      const todo: Todo = {task: form.value.task};
+      this.todoCreated.emit(todo);
   }
 }

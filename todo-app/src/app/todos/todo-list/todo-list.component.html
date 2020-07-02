@@ -1,7 +1,8 @@
-<mat-accordion>
-  <mat-expansion-panel>
+<mat-accordion multi="true" *ngIf="todos.length > 0">
+  <mat-expansion-panel *ngFor="let todo of todos">
     <mat-expansion-panel-header>
-      
+        {{todo.task}}
     </mat-expansion-panel-header>
   </mat-expansion-panel>
 </mat-accordion>
+<p class="info-text mat-body-1" *ngIf="todos.length <= 0">No tasks added yet!</p>

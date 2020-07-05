@@ -1,10 +1,18 @@
 <mat-card>
-  <form (submit)="onAddTodo(todoForm)" #todoForm="ngForm">
-    <mat-form-field>
-      <input matInput type="text" name="task" ngModel required minlength="3" #task="ngModel">
+  <form (submit)="onAddTodo(todoForm)" #todoForm="ngForm" layout layout-align="center" layout-padding>
+    <mat-form-field flex class="md-icon-float md-block md-title">
+      <input
+      matInput
+      type="text"
+      name="task"
+      ngModel
+      required
+      minlength="3"
+      #task="ngModel"
+      placeholder="Enter todo">
+      <button mat-button matSuffix mat-stroked-button mat-raised-button color="primary" type="submit">Add todo</button>
       <mat-error *ngIf="task.invalid">Please enter task you want to do!</mat-error>
     </mat-form-field>
-    <button mat-raised-button color="primary" type="submit">Add todo</button>
   </form>
 </mat-card>
 

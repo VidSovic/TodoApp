@@ -1,21 +1,20 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import { Todo } from '../todo.model';
+import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { TodosService } from '../todos.service';
 
 @Component({
   selector:'app-todo-create',
   templateUrl: './todo-create.component.html',
   styleUrls: ['./todo-create.component.css']
 })
-export class TodoCreateComponent{
-  enteredValue='';
-  @Output() todoCreated = new EventEmitter<Todo>();
+export class TodoCreateComponent {
+  constructor(public todosService: TodosService){}
 
   onAddTodo(form: NgForm){
     if(form.invalid){
       return;
     }
-      const todo: Todo = {task: form.value.task};
-      this.todoCreated.emit(todo);
+      this.todosService.addTodo(form.value.task);
+      form.resetForm();
   }
 }

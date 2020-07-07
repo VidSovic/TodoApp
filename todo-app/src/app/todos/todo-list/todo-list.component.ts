@@ -15,7 +15,7 @@ import { AppState } from './../../app.state';
 
 export class TodoListComponent implements OnInit, OnDestroy{
   todos: Todo[] = [];
-  todos_important: Todo[] = [];
+  todosImportant: Todo[] = [];
   private todosSub: Subscription;
   todosCount: number = 0;
   iterableDiffer: any;
@@ -42,13 +42,13 @@ export class TodoListComponent implements OnInit, OnDestroy{
     this.all = true;
   }
   ngDoCheck() {
-    let changes = this.iterableDiffer.diff(this.todos_important);
+    let changes = this.iterableDiffer.diff(this.todosImportant);
     if (changes) {
-      this.todosService.syncTodosImportant(this.todos_important);
+      this.todosService.syncTodosImportant(this.todosImportant);
 
     }
-    let changes2 = this.iterableDiffer.diff(this.todos);
-    if(changes2){
+     changes = this.iterableDiffer.diff(this.todos);
+    if(changes){
       this.todosService.syncTodos(this.todos);
     }
 }
@@ -59,14 +59,14 @@ moveToBasicList(id: number){
     this.todos = todos;
 });
   this.todosSub = this.todosService.getTodoUpdateListenerImportant().subscribe((todos: Todo[]) =>{
-    this.todos_important = todos;
+    this.todosImportant = todos;
   });
 }
 
 moveToImporantList(id: number){
     this.todosService.moveToImportantList(id);
     this.todosSub = this.todosService.getTodoUpdateListenerImportant().subscribe((todos: Todo[]) =>{
-      this.todos_important = todos;
+      this.todosImportant = todos;
     });
     this.todosSub = this.todosService.getTodoUpdateListener().subscribe((todos: Todo[]) =>{
       this.todos = todos;
@@ -83,7 +83,7 @@ moveToImporantList(id: number){
   onRemoveTodoImportant(id: number){
     this.todosService.removeTodoImportant(id);
     this.todosSub = this.todosService.getTodoUpdateListenerImportant().subscribe((todos: Todo[]) =>{
-        this.todos_important = todos;
+        this.todosImportant = todos;
     });
   }
 
@@ -103,8 +103,8 @@ moveToImporantList(id: number){
 
     checkToggleImportant(id:number){
       this.todosService.checkToggleImportant(id);
-      this.todosSub = this.todosService.getTodoUpdateListenerImportant().subscribe((todos_important: Todo[]) =>{
-      this.todos_important = todos_important;
+      this.todosSub = this.todosService.getTodoUpdateListenerImportant().subscribe((todosImportant: Todo[]) =>{
+      this.todosImportant = todosImportant;
     });
     this.countActiveTasks();
     }
@@ -132,7 +132,7 @@ moveToImporantList(id: number){
         this.todosCount++;
       }
     }
-    for(let todo of this.todos_important){
+    for(let todo of this.todosImportant){
       if(todo.completed === false){
         this.todosCount++;
       }
@@ -145,7 +145,7 @@ moveToImporantList(id: number){
       this.todos = todos;
     });
     this.todosSub = this.todosService.getTodoUpdateListenerImportant().subscribe((todos: Todo[]) =>{
-      this.todos_important = todos;
+      this.todosImportant = todos;
     });
   }
 

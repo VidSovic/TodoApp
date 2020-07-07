@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 @Injectable({providedIn: 'root'})
 export class TodosService{
   private todos: Todo[] = [];
-  private todos_important: Todo[] = [];
+  private todosImportant: Todo[] = [];
   private todosUpdated = new Subject<Todo[]>();
   private todosUpdated_important = new Subject<Todo[]>();
   private todosCounter=0;
@@ -14,7 +14,7 @@ export class TodosService{
     return [...this.todos];
   }
   getTodosImportant(){
-    return [...this.todos_important];
+    return [...this.todosImportant];
   }
 
   getTodoUpdateListener(){
@@ -29,7 +29,7 @@ export class TodosService{
     this.todosUpdated.next([...todos]);
   }
   syncTodosImportant(todos: Todo[]){
-    this.todos_important = todos;
+    this.todosImportant = todos;
     this.todosUpdated_important.next([...todos]);
   }
 
@@ -58,40 +58,40 @@ export class TodosService{
   }
 
   removeTodoImportant(id: number){
-    for(let todo of this.todos_important){
+    for(let todo of this.todosImportant){
       if(todo.id === id){
         if(todo.completed === false){
           this.todosCounter--;
         }
       }
   }
-    this.todos_important = this.todos_important.filter(todos => todos.id !== id);
-    this.todosUpdated_important.next([...this.todos_important]);
+    this.todosImportant = this.todosImportant.filter(todos => todos.id !== id);
+    this.todosUpdated_important.next([...this.todosImportant]);
   }
 
   moveToImportantList(id:number){
       for(let todo of this.todos){
         if(todo.id === id){
-          this.todos_important.push(todo);
+          this.todosImportant.push(todo);
           break;
         }
       }
-      this.todosUpdated_important.next([...this.todos_important]);
+      this.todosUpdated_important.next([...this.todosImportant]);
 
       this.todos = this.todos.filter(todos => todos.id !== id);
       this.todosUpdated.next([...this.todos]);
   }
 
   moveToBasicList(id: number){
-    for(let todo of this.todos_important){
+    for(let todo of this.todosImportant){
       if(todo.id === id){
         this.todos.push(todo);
         break;
       }
     }
     this.todosUpdated.next([...this.todos]);
-    this.todos_important = this.todos_important.filter(todos => todos.id !== id);
-    this.todosUpdated_important.next([...this.todos_important]);
+    this.todosImportant = this.todosImportant.filter(todos => todos.id !== id);
+    this.todosUpdated_important.next([...this.todosImportant]);
   }
 
   checkToggle(id:number){
@@ -104,31 +104,19 @@ export class TodosService{
     this.todosUpdated.next([...this.todos]);
   }
   checkToggleImportant(id:number){
-    for(let todo of this.todos_important){
+    for(let todo of this.todosImportant){
         if(todo.id === id){
           todo.completed = !todo.completed;
         }
     }
-    console.log(this.todos_important);
-    this.todosUpdated_important.next([...this.todos_important]);
+    console.log(this.todosImportant);
+    this.todosUpdated_important.next([...this.todosImportant]);
   }
-
-  /*
-  sideToggle(id:number){
-    for(let todo of this.todos){
-      if(todo.id === id){
-        if(todo.side == 'left'){todo.side='right';}
-        else{todo.side='left';}
-      }
-    }
-    this.todosUpdated.next([...this.todos]);
-  }
-  */
 
   removeCompleted(){
     this.todos = this.todos.filter(todos => todos.completed === false);
     this.todosUpdated.next([...this.todos]);
-    this.todos_important = this.todos_important.filter(todos => todos.completed === false);
-    this.todosUpdated_important.next([...this.todos_important]);
+    this.todosImportant = this.todosImportant.filter(todos => todos.completed === false);
+    this.todosUpdated_important.next([...this.todosImportant]);
   }
 }

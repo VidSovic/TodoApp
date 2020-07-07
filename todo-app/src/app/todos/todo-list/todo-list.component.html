@@ -1,6 +1,6 @@
-<mat-toolbar *ngIf="todos.length > 0 || todos_important.length >0" color="accent">{{todosCount}} items left<button mat-button (click)="showAll()">ALL</button><button mat-button (click)="showActive()">ACTIVE</button><button mat-button (click)="showChecked()">COMPLETED</button> <button class="btn-clear-completed" (click)="onRemoveCompleted()" mat-button>CLEAR COMPLETED</button></mat-toolbar>
+<mat-toolbar *ngIf="todos.length > 0 || todosImportant.length >0" color="accent">{{todosCount}} task's left<button mat-button (click)="showAll()">ALL</button><button mat-button (click)="showActive()">ACTIVE</button><button mat-button (click)="showChecked()">COMPLETED</button> <button class="btn-clear-completed" (click)="onRemoveCompleted()" mat-button>CLEAR COMPLETED</button></mat-toolbar>
 
-<div class="root-div"  cdkDropListGroup *ngIf="todos.length > 0 || todos_important.length >0">
+<div class="root-div"  cdkDropListGroup *ngIf="todos.length > 0 || todosImportant.length >0">
   <div class="example-container">
     <h2>Basic todo's</h2>
 
@@ -47,10 +47,10 @@
 
     <div
       cdkDropList
-      [cdkDropListData]="todos_important"
+      [cdkDropListData]="todosImportant"
       class="example-list"
       (cdkDropListDropped)="drop($event)">
-      <div class="example-box" *ngFor="let todo of todos_important" cdkDrag>
+      <div class="example-box" *ngFor="let todo of todosImportant" cdkDrag>
         <div *ngIf="completed || all">
           <div class="task" *ngIf="todo.completed">
             <label class="container">
@@ -84,4 +84,4 @@
 </div>
 
 
-<p class="info-text mat-body-1" *ngIf="todos.length <= 0 && todos_important.length <= 0">No tasks to show!</p>
+<p class="info-text mat-body-1" *ngIf="todos.length <= 0 && todosImportant.length <= 0">No tasks to show!</p>

@@ -10,8 +10,7 @@
       minlength="3"
       #task="ngModel"
       placeholder="Enter todo">
-      <button mat-button matSuffix mat-stroked-button mat-raised-button color="primary" type="submit">Add todo</button>
-      <mat-error *ngIf="task.invalid">Please enter task you want to do!</mat-error>
+      <mat-error *ngIf="task.invalid">Please enter task you want to do! (min lenght: 3)</mat-error>
     </mat-form-field>
   </form>
 </mat-card>

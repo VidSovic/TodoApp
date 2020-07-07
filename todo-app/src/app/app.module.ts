@@ -14,6 +14,10 @@ import { TodoCreateComponent } from './todos/todo-create/todo-create.component';
 import { HeaderComponent } from './header/header.component';
 import { TodoListComponent } from './todos/todo-list/todo-list.component';
 
+import { DragDropModule } from '@angular/cdk/drag-drop'
+
+import { StoreModule } from '@ngrx/store';
+import { reducer } from './reducers/todo.reducer';
 
 
 @NgModule({
@@ -31,7 +35,11 @@ import { TodoListComponent } from './todos/todo-list/todo-list.component';
     MatCardModule,
     MatButtonModule,
     MatToolbarModule,
-    MatExpansionModule
+    MatExpansionModule,
+    DragDropModule,
+    StoreModule.forRoot({
+      todo: reducer
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]

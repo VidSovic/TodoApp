@@ -1,7 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy, IterableDiffers } from '@angular/core';
+import { Subscription, Observable } from 'rxjs';
 import {Todo} from '../todo.model';
 import { TodosService } from '../todos.service';
+import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import { Store } from '@ngrx/store';
+import { AppState } from './../../app.state';
+//import * as TodoActions from './../../actions/todo.actions';
 
 @Component({
   selector: 'app-todo-list',
@@ -11,11 +15,21 @@ import { TodosService } from '../todos.service';
 
 export class TodoListComponent implements OnInit, OnDestroy{
   todos: Todo[] = [];
+  todos_important: Todo[] = [];
   private todosSub: Subscription;
   todosCount: number = 0;
+  iterableDiffer: any;
+  completed: boolean;
+  active: boolean;
+  all: boolean;
+
+  //todosObservable: Observable<Todo[]>;
 
 
-  constructor(public todosService: TodosService){}
+  constructor(public todosService: TodosService, private iterableDiffers: IterableDiffers, private store: Store<AppState>){
+    this.iterableDiffer = iterableDiffers.find([]).create(null);
+    //this.todosObservable = store.select('todo');
+  }
 
   ngOnInit(){
     this.todos = this.todosService.getTodos();
@@ -23,7 +37,41 @@ export class TodoListComponent implements OnInit, OnDestroy{
         this.todos = todos;
         this.countActiveTasks();
     });
+    this.completed = false;
+    this.active = false;
+    this.all = true;
   }
+  ngDoCheck() {
+    let changes = this.iterableDiffer.diff(this.todos_important);
+    if (changes) {
+      this.todosService.syncTodosImportant(this.todos_important);
+
+    }
+    let changes2 = this.iterableDiffer.diff(this.todos);
+    if(changes2){
+      this.todosService.syncTodos(this.todos);
+    }
+}
+
+moveToBasicList(id: number){
+  this.todosService.moveToBasicList(id);
+  this.todosSub = this.todosService.getTodoUpdateListener().subscribe((todos: Todo[]) =>{
+    this.todos = todos;
+});
+  this.todosSub = this.todosService.getTodoUpdateListenerImportant().subscribe((todos: Todo[]) =>{
+    this.todos_important = todos;
+  });
+}
+
+moveToImporantList(id: number){
+    this.todosService.moveToImportantList(id);
+    this.todosSub = this.todosService.getTodoUpdateListenerImportant().subscribe((todos: Todo[]) =>{
+      this.todos_important = todos;
+    });
+    this.todosSub = this.todosService.getTodoUpdateListener().subscribe((todos: Todo[]) =>{
+      this.todos = todos;
+  });
+}
 
   onRemoveTodo(id: number){
     this.todosService.removeTodo(id);
@@ -31,6 +79,19 @@ export class TodoListComponent implements OnInit, OnDestroy{
         this.todos = todos;
     });
   }
+
+  onRemoveTodoImportant(id: number){
+    this.todosService.removeTodoImportant(id);
+    this.todosSub = this.todosService.getTodoUpdateListenerImportant().subscribe((todos: Todo[]) =>{
+        this.todos_important = todos;
+    });
+  }
+
+  /*
+  onRemoveTodoWithNgRx(index){
+    this.store.dispatch(new TodoActions.RemoveTodo(index));
+  }
+  */
 
     checkToggle(id:number){
       this.todosService.checkToggle(id);
@@ -40,29 +101,28 @@ export class TodoListComponent implements OnInit, OnDestroy{
     this.countActiveTasks();
     }
 
-  ngOnDestroy(){
-    this.todosSub.unsubscribe();
-  }
+    checkToggleImportant(id:number){
+      this.todosService.checkToggleImportant(id);
+      this.todosSub = this.todosService.getTodoUpdateListenerImportant().subscribe((todos_important: Todo[]) =>{
+      this.todos_important = todos_important;
+    });
+    this.countActiveTasks();
+    }
 
   showChecked(){
-    this.todos = this.todosService.getTodos();
-    this.todosSub = this.todosService.getTodoUpdateListener().subscribe((todos: Todo[]) =>{
-        this.todos = todos;
-    });
-    this.todos = this.todos.filter(todos => todos.completed === true);
+    this.completed = true;
+    this.all = false;
+    this.active = false;
   }
   showActive(){
-    this.todos = this.todosService.getTodos();
-    this.todosSub = this.todosService.getTodoUpdateListener().subscribe((todos: Todo[]) =>{
-        this.todos = todos;
-    });
-    this.todos = this.todos.filter(todos => todos.completed === false);
+    this.completed = false;
+    this.all = false;
+    this.active = true;
   }
   showAll(){
-    this.todos = this.todosService.getTodos();
-    this.todosSub = this.todosService.getTodoUpdateListener().subscribe((todos: Todo[]) =>{
-        this.todos = todos;
-    });
+    this.completed = false;
+    this.all = true;
+    this.active = false;
   }
 
   countActiveTasks(){
@@ -72,13 +132,36 @@ export class TodoListComponent implements OnInit, OnDestroy{
         this.todosCount++;
       }
     }
+    for(let todo of this.todos_important){
+      if(todo.completed === false){
+        this.todosCount++;
+      }
+    }
   }
 
-  sideToggle(id:number){
-    this.todosService.sideToggle(id);
+  onRemoveCompleted(){
+    this.todosService.removeCompleted();
     this.todosSub = this.todosService.getTodoUpdateListener().subscribe((todos: Todo[]) =>{
       this.todos = todos;
     });
+    this.todosSub = this.todosService.getTodoUpdateListenerImportant().subscribe((todos: Todo[]) =>{
+      this.todos_important = todos;
+    });
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      transferArrayItem(event.previousContainer.data,
+                        event.container.data,
+                        event.previousIndex,
+                        event.currentIndex);
+    }
+  }
+
+  ngOnDestroy(){
+    this.todosSub.unsubscribe();
   }
 
 }

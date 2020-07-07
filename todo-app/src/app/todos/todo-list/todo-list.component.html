@@ -1,62 +1,87 @@
-<mat-toolbar color="accent">{{todosCount}} items left<button mat-button (click)="showAll()">ALL</button><button mat-button (click)="showActive()">ACTIVE</button><button mat-button (click)="showChecked()">COMPLETED</button></mat-toolbar>
-<mat-accordion multi="true" *ngIf="todos.length > 0">
-  <div class="container">
-    <div class="row align-items-center">
-    <div class="col">
-      <ng-container *ngFor="let todo of todos">
-      <div class="left-half" *ngIf="todo.side=='left'">
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-            <div class="task" *ngIf="todo.completed">
-              <label class="container">
-                <input type="checkbox" (click)="checkToggle(todo.id)" checked> <del class="task-text">{{todo.task}}</del>
-                <span class="checkmark"></span>
-              </label>
-            </div>
+<mat-toolbar *ngIf="todos.length > 0 || todos_important.length >0" color="accent">{{todosCount}} items left<button mat-button (click)="showAll()">ALL</button><button mat-button (click)="showActive()">ACTIVE</button><button mat-button (click)="showChecked()">COMPLETED</button> <button class="btn-clear-completed" (click)="onRemoveCompleted()" mat-button>CLEAR COMPLETED</button></mat-toolbar>
 
-            <div class="task" *ngIf="!todo.completed">
-              <label class="container">
-                <input type="checkbox" (click)="checkToggle(todo.id)"><p class="task-text">{{todo.task}}</p>
-                <span class="checkmark"></span>
-            </label>
-            </div>
-        </mat-expansion-panel-header>
-        <mat-action-row>
-            <button mat-button (click)="sideToggle(todo.id)">MOVE TO IMPORTANT LIST</button>
-            <button mat-button (click)="onRemoveTodo(todo.id)" color="warn">REMOVE</button>
-        </mat-action-row>
-      </mat-expansion-panel>
-    </div>
-      </ng-container>
-      </div>
-    <div class="col">
-  <ng-container *ngFor="let todo of todos">
-<div class="right-half" *ngIf="todo.side=='right'">
-  <mat-expansion-panel>
-    <mat-expansion-panel-header>
+<div class="root-div"  cdkDropListGroup *ngIf="todos.length > 0 || todos_important.length >0">
+  <div class="example-container">
+    <h2>Basic todo's</h2>
+
+    <div
+      cdkDropList
+      [cdkDropListData]="todos"
+      class="example-list"
+      (cdkDropListDropped)="drop($event)">
+      <div class="example-box" *ngFor="let todo of todos" cdkDrag>
+        <div *ngIf="completed || all">
         <div class="task" *ngIf="todo.completed">
           <label class="container">
             <input type="checkbox" (click)="checkToggle(todo.id)" checked> <del class="task-text">{{todo.task}}</del>
             <span class="checkmark"></span>
           </label>
+          <div class="btns">
+            <hr>
+            <button mat-button (click)="moveToImporantList(todo.id)">MOVE TO IMPORTANT LIST</button>
+            <button mat-button (click)="onRemoveTodo(todo.id)" color="warn">REMOVE</button>
+          </div>
         </div>
-
+      </div>
+      <div *ngIf="active || all">
         <div class="task" *ngIf="!todo.completed">
           <label class="container">
             <input type="checkbox" (click)="checkToggle(todo.id)"><p class="task-text">{{todo.task}}</p>
             <span class="checkmark"></span>
         </label>
+        <div class="btns">
+          <hr>
+          <button mat-button (click)="moveToImporantList(todo.id)">MOVE TO IMPORTANT LIST</button>
+          <button mat-button (click)="onRemoveTodo(todo.id)" color="warn">REMOVE</button>
+          <!--<button mat-button (click)="onRemoveTodoWithNgRx(i)" color="warn">REMOVE</button> --->
         </div>
-    </mat-expansion-panel-header>
-    <mat-action-row>
-        <button mat-button (click)="sideToggle(todo.id)">MOVE TO BASIC LIST</button>
-        <button mat-button (click)="onRemoveTodo(todo.id)" color="warn">REMOVE</button>
-    </mat-action-row>
-  </mat-expansion-panel>
-</div>
-  </ng-container>
+        </div>
+      </div>
+
+      </div>
+    </div>
   </div>
+
+  <div class="example-container">
+    <h2>Important todo's</h2>
+
+    <div
+      cdkDropList
+      [cdkDropListData]="todos_important"
+      class="example-list"
+      (cdkDropListDropped)="drop($event)">
+      <div class="example-box" *ngFor="let todo of todos_important" cdkDrag>
+        <div *ngIf="completed || all">
+          <div class="task" *ngIf="todo.completed">
+            <label class="container">
+              <input type="checkbox" (click)="checkToggleImportant(todo.id)" checked> <del class="task-text">{{todo.task}}</del>
+              <span class="checkmark"></span>
+            </label>
+            <div class="btns">
+              <hr>
+              <button mat-button (click)="moveToBasicList(todo.id)">MOVE TO BASIC LIST</button>
+              <button mat-button (click)="onRemoveTodoImportant(todo.id)" color="warn">REMOVE</button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="active || all">
+          <div class="task" *ngIf="!todo.completed">
+            <label class="container">
+              <input type="checkbox" (click)="checkToggleImportant(todo.id)"><p class="task-text">{{todo.task}}</p>
+              <span class="checkmark"></span>
+          </label>
+          <div class="btns">
+            <hr>
+            <button mat-button (click)="moveToBasicList(todo.id)">MOVE TO BASIC LIST</button>
+            <button mat-button (click)="onRemoveTodoImportant(todo.id)" color="warn">REMOVE</button>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
-</div>
-</mat-accordion>
-<p class="info-text mat-body-1" *ngIf="todos.length <= 0">No tasks to show!</p>
+
+
+<p class="info-text mat-body-1" *ngIf="todos.length <= 0 && todos_important.length <= 0">No tasks to show!</p>
